@@ -149,6 +149,30 @@ def select_players(players, assigned):
                 print("No valid players selected.")
         except Exception:
             print("Invalid input. Try again.")
+def assign_players_to_teams(selected_players, teams, team_assignments):
+    """
+    Randomly assigns selected players to teams and updates team assignments.
+
+    Parameters:
+    selected_players (list): Players to assign.
+    teams (dict): Dictionary of team names as keys.
+    team_assignments (dict): Dictionary to store assigned players per team.
+
+    Returns:
+    None: Prints the updated team rosters.
+    """
+    random.shuffle(selected_players)
+    team_names = list(teams.keys())
+    for idx, player in enumerate(selected_players):
+        team = team_names[idx % len(team_names)]
+        team_assignments[team].append(player)
+    print("\nLottery Results for this round:")
+    for team, members in team_assignments.items():
+        print(f"{team}:")
+        for i, member in enumerate(members, 1):
+            print(f"  {i}. {member}")
+
+
 
 
 
