@@ -171,6 +171,67 @@ def assign_players_to_teams(selected_players, teams, team_assignments):
         print(f"{team}:")
         for i, member in enumerate(members, 1):
             print(f"  {i}. {member}")
+def print_bold_centered(text, width=40):
+    # Simulate bold and font size 24 in terminal with uppercase and centering
+    centered = text.upper().center(width)
+    print(centered, end='')  # Remove newline
+    print('\n' + '_' * len(centered))
+
+def main():
+    print("Welcome to the Team Maker App!")
+    players = []
+    total_players = get_int_input("Enter total number of players: ")
+    for i in range(total_players):
+        name = input(f"Enter name for player {i+1}: ").strip()
+        while not name:
+            print("Name cannot be empty.")
+            name = input(f"Enter name for player {i+1}: ").strip()
+        players.append(name)
+    manage_players(players)
+    num_teams = get_int_input("Enter number of teams to form: ", 2)
+    teams = {}
+    for i in range(num_teams):
+        team_name = input(f"Enter name for team {i+1}: ").strip()
+        while not team_name or team_name in teams:
+            print("Name cannot be empty or duplicate.")
+            team_name = input(f"Enter name for team {i+1}: ").strip()
+        teams[team_name] = []
+    assigned = set()
+    team_assignments = {team: [] for team in teams}
+    history = []  # To support going back
+    while len(assigned) < len(players):
+        selected = select_players(players, assigned)
+        if selected is None:
+            # User wants to go back
+            if not history:
+                print("No previous round to go back to.")
+                continue
+            # Undo last round
+            last_selected = history.pop()
+            for player in last_selected:
+                assigned.remove(player)
+                for team in team_assignments:
+                    if player in team_assignments[team]:
+                        team_assignments[team].remove(player)
+            print("Last round undone. Please select players again.")
+            continue
+        assign_players_to_teams(selected, teams, team_assignments)
+        assigned.update(selected)
+        history.append(selected)
+        if len(assigned) < len(players):
+            print(f"\n{len(players) - len(assigned)} players left to assign.")
+    print("\nFinal Team Assignments:")
+    for idx, (team, members) in enumerate(team_assignments.items()):
+        print_bold_centered(team)
+        for i, member in enumerate(members, 1):
+            print(f"  {i}. {member}")
+        if idx < len(team_assignments) - 1:
+            print("\n")  # Two line gap between teams
+    print("\nAll players have been assigned!")
+
+if __name__ == "__main__":
+    main()
+
 
 
 
