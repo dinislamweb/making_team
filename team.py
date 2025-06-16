@@ -34,4 +34,35 @@ def list_players(players):
     for idx, name in enumerate(players, 1):
         print(f"{idx}. {name}")
     print()
+def edit_player(players):
+    """
+    Allows the user to edit the name of an existing player from the list.
+
+    This function first displays the current list of players, then prompts the user 
+    to select a player by their index number. It then asks for a new name and updates 
+    the player's name if the input is valid.
+
+    Parameters:
+    players (list): A list of player names (strings) to be edited.
+
+    Returns:
+    None: The function modifies the 'players' list in place and prints messages to the console.
+
+    Notes:
+    - Uses `get_int_input()` function (assumed to be defined elsewhere) to safely get numeric input.
+    - Does not allow setting an empty name.
+    - If an invalid player number is entered, an error message is displayed.
+    """
+    list_players(players)
+    idx = get_int_input("Enter the number of the player to edit: ", 1)
+    if 1 <= idx <= len(players):
+        new_name = input(f"Enter new name for {players[idx-1]}: ").strip()
+        if new_name:
+            players[idx-1] = new_name
+            print("Player name updated.")
+        else:
+            print("Name cannot be empty.")
+    else:
+        print("Invalid player number.")
+
 
