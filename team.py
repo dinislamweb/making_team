@@ -20,3 +20,18 @@ def get_int_input(prompt, min_value=1):
                 print(f"Please enter a number >= {min_value}.")
         except ValueError:
             print("Invalid input. Please enter a number.")
+def list_players(players):
+    """
+    Displays a numbered list of current players.
+
+    Parameters:
+    players (list): A list of player names (strings).
+
+    Returns:
+    None: This function only prints the list of players to the console.
+    """
+    print("\nCurrent Players:")
+    for idx, name in enumerate(players, 1):
+        print(f"{idx}. {name}")
+    print()
+
