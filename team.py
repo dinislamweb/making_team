@@ -65,4 +65,47 @@ def edit_player(players):
     else:
         print("Invalid player number.")
 
+def manage_players(players):
+    """
+    Provides a simple interactive menu for managing player names.
+
+    This function allows the user to:
+    - View the current list of players.
+    - Edit the name of any existing player.
+    - Exit the player management loop.
+
+    The function runs in a loop until the user chooses the 'Done' option.
+
+    Parameters:
+    players (list): A list of player names (strings) to be managed.
+
+    Returns:
+    None: Modifies the 'players' list in place and interacts via console I/O.
+
+    Menu Options:
+    1. List players — displays all current players.
+    2. Edit player — lets user change the name of a specific player.
+    3. Done — exits the player management menu.
+
+    Notes:
+    - Uses `list_players()` and `edit_player()` functions internally.
+    - Input is handled via standard input; user must enter a valid menu option.
+
+    """
+    while True:
+        print("\nPlayer Management:")
+        print("1. List players")
+        print("2. Edit player")
+        print("3. Done")
+        choice = input("Choose an option: ").strip()
+        if choice == '1':
+            list_players(players)
+        elif choice == '2':
+            edit_player(players)
+        elif choice == '3':
+            break
+        else:
+            print("Invalid choice.")
+
+
 
