@@ -106,6 +106,50 @@ def manage_players(players):
             break
         else:
             print("Invalid choice.")
+def select_players(players, assigned):
+    """
+    Allows the user to select a subset of unassigned players for the current lottery round.
+
+    This function filters out already assigned players, displays the list of available players,
+    and lets the user choose which ones to include in the next random team assignment.
+
+    Parameters:
+    players (list): A complete list of all player names (strings).
+    assigned (list): A list of already assigned player names (strings) to be excluded.
+
+    Returns:
+    list or None:
+        - Returns a list of selected player names (strings) if selection is successful.
+        - Returns None if the user types 'back', indicating they want to exit selection.
+
+    Input Format:
+    - User is prompted to enter a comma-separated list of player numbers based on the displayed list.
+    - Example: `1, 3, 4` selects the 1st, 3rd, and 4th available players.
+    - Typing `back` allows the user to cancel and go back to the previous menu.
+
+    Notes:
+    - Invalid or out-of-range inputs are handled gracefully with informative prompts.
+    - Players who have already been assigned are not shown in the selection list.
+    """
+    available = [p for p in players if p not in assigned]
+    while True:
+        print("\nAvailable players for this round:")
+        for idx, name in enumerate(available, 1):
+            print(f"{idx}. {name}")
+        print("Enter player numbers from the current available list separated by commas (e.g., 1,3,5):")
+        inp = input("Select players: ").strip()
+        if inp.lower() == 'back':
+            return None  # Signal to go back
+        try:
+            indices = [int(i)-1 for i in inp.split(',') if i.strip().isdigit()]
+            selected = [available[i] for i in indices if 0 <= i < len(available)]
+            if selected:
+                return selected
+            else:
+                print("No valid players selected.")
+        except Exception:
+            print("Invalid input. Try again.")
+
 
 
 
