@@ -271,26 +271,49 @@ class TeamMakerApp:
     def show_final_teams_only(self):
         win = tk.Toplevel(self.root)
         win.title("Final Team Assignments")
-        win.geometry("500x600")
+        win.geometry("900x600")
         win.configure(bg="#FDFEFE")
-        canvas = tk.Canvas(win, bg="#FDFEFE")
-        scrollbar = tk.Scrollbar(win, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg="#FDFEFE")
-        scrollable_frame.bind(
-            "<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-        for team, members in self.team_assignments.items():
-            frame = tk.LabelFrame(scrollable_frame, text=team.upper(), font=("Arial", 18, "bold"), fg="#922B21", bg="#FDFEFE", padx=10, pady=10, labelanchor='n')
-            frame.pack(padx=15, pady=15, fill="x")
-            for i, member in enumerate(members, 1):
-                tk.Label(frame, text=f"{i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE").pack(anchor="w", pady=2)
-        tk.Label(scrollable_frame, text="All players have been assigned!", font=("Arial", 16, "bold"), fg="#229954", bg="#FDFEFE").pack(pady=20)
-        tk.Button(scrollable_frame, text="Save Teams to File", font=("Arial", 14), bg="#FCF3CF", fg="#7D6608", command=self.save_teams_to_file).pack(pady=10)
-        tk.Button(scrollable_frame, text="Back to Menu", font=("Arial", 14), bg="#F5B7B1", fg="#641E16", command=lambda: [win.destroy(), self.setup_main_menu()]).pack(pady=10)
+        # Responsive title label
+        title_var = tk.StringVar(value="Teams with Players")
+        title_label = tk.Label(win, textvariable=title_var, font=("Arial", 28, "bold"), fg="#2E86C1", bg="#FDFEFE")
+        title_label.pack(pady=(30, 10))
+        def resize_title(event):
+            w = event.width
+            # Responsive font size: scale between 16 and 36
+            size = max(16, min(36, w // 30))
+            title_label.config(font=("Arial", size, "bold"))
+        win.bind("<Configure>", resize_title)
+        # Frame for team buttons and player lists
+        teams_frame = tk.Frame(win, bg="#FDFEFE")
+        teams_frame.pack(pady=10, fill="both", expand=True)
+        player_frames = {}
+        def show_players(team, btn):
+            for t, (pf, b) in player_frames.items():
+                pf.pack_forget()
+            pf, btn_widget = player_frames[team]
+            for widget in pf.winfo_children():
+                widget.destroy()
+            # Only show player names, no team heading
+            for i, member in enumerate(self.team_assignments[team], 1):
+                tk.Label(pf, text=f"  {i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE", anchor="w", justify="left").pack(fill="x", padx=16, pady=2)
+            # Center the player frame under the button, matching width
+            pf.pack(after=btn_widget, fill=None, padx=0, pady=(0, 16))
+            pf.update_idletasks()
+            pf.config(width=btn_widget.winfo_width())
+        for team in self.team_assignments:
+            # Team button (smaller height)
+            btn = tk.Button(teams_frame, text=team.upper(), font=("Arial", 16, "bold"), bg="#D6EAF8", fg="#154360", width=18, height=1,
+                            command=lambda t=team: show_players(t, btn))
+            btn.pack(pady=6)
+            # Player frame (hidden by default, same width as button, centered)
+            pf = tk.Frame(teams_frame, bg="#FDFEFE", relief="groove", bd=2, width=btn.winfo_reqwidth(), height=40)
+            pf.pack_propagate(False)  # Prevent frame from shrinking to fit contents
+            player_frames[team] = (pf, btn)
+        # Buttons below
+        btn_frame = tk.Frame(win, bg="#FDFEFE")
+        btn_frame.pack(side="bottom", pady=20)
+        tk.Button(btn_frame, text="Save Teams to File", font=("Arial", 14), bg="#FCF3CF", fg="#7D6608", command=self.save_teams_to_file).pack(padx=20, pady=(0, 10))
+        tk.Button(btn_frame, text="Back to Menu", font=("Arial", 14), bg="#F5B7B1", fg="#641E16", command=lambda: [win.destroy(), self.setup_main_menu()]).pack(padx=20)
 
     def show_teams_one_by_one(self, final=True, parent_win=None):
         teams = list(self.team_assignments.items())
