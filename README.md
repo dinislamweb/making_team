@@ -1,17 +1,23 @@
 # Team Maker App
 
-A command-line Python application to help you form teams from a list of players, with interactive player management and fair, random assignment.
+A Python application (CLI and GUI) to help you form teams from a list of players, with interactive player/team management and fair, random assignment.
 
 ## Features
-- Input the total number of players and their names
+- Input the total number of players and their names (auto-formatted: each word capitalized)
 - Edit player names interactively
-- Specify the number of teams and their names
+- Specify the number of teams and their names (auto-formatted: each word capitalized)
 - Select which players to include in each lottery round
 - Randomly and fairly assign selected players to teams, repeating until all are assigned
 - Undo the last lottery round if needed
 - Clear, visually separated final team assignments
+- **GUI version (Tkinter):**
+  - Modern, colorful, and responsive interface
+  - Centered, visually appealing menus and dialogs
+  - Click team names to view player lists
+  - Save team assignments to a file
 
 ## How to Use
+### CLI Version
 1. **Run the app:**
    ```bash
    python team.py
@@ -24,7 +30,18 @@ A command-line Python application to help you form teams from a list of players,
    - Type `back` during player selection to undo the previous round if needed
    - After all players are assigned, view the final team assignments
 
-## Example Output
+### GUI Version
+1. **Run the GUI app:**
+   ```bash
+   python team_gui.py
+   ```
+2. **Use the graphical interface:**
+   - Enter the number of players/teams, then their names (auto-formatted)
+   - Edit names, start the lottery, and view teams
+   - Click a team name to see its players
+   - Save results to a file
+
+## Example Output (CLI)
 ```
 Final Team Assignments:
               TEAM A
@@ -45,8 +62,9 @@ All players have been assigned!
 - No external dependencies
 
 ## Notes
-- All input and output is via the terminal/command prompt.
+- All input and output is via the terminal/command prompt or GUI window.
 - The app ensures fairness by shuffling players before assignment.
+- Player and team names are always formatted with each word capitalized.
 - You can only edit player names after initial entry (no add/remove in menu).
 
 ## License
