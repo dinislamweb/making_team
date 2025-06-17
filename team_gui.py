@@ -287,28 +287,31 @@ class TeamMakerApp:
         teams_frame = tk.Frame(win, bg="#FDFEFE")
         teams_frame.pack(pady=10, fill="both", expand=True)
         player_frames = {}
-        def show_players(team, btn):
+        for team in self.team_assignments:
+            btn = tk.Button(teams_frame, text=team.upper(), font=("Arial", 16, "bold"), bg="#D6EAF8", fg="#154360", width=18, height=1)
+            btn.pack(pady=6, anchor="center")
+            pf = tk.Frame(teams_frame, bg="#FDFEFE", relief="groove", bd=2, width=350)
+            pf.pack_propagate(False)
+            player_frames[team] = (pf, btn)
+        def show_players(team, btn_widget):
             for t, (pf, b) in player_frames.items():
                 pf.pack_forget()
-            pf, btn_widget = player_frames[team]
+            pf, _ = player_frames[team]
             for widget in pf.winfo_children():
                 widget.destroy()
-            # Only show player names, no team heading
-            for i, member in enumerate(self.team_assignments[team], 1):
-                tk.Label(pf, text=f"  {i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE", anchor="w", justify="left").pack(fill="x", padx=16, pady=2)
-            # Center the player frame under the button, matching width
-            pf.pack(after=btn_widget, fill=None, padx=0, pady=(0, 16))
+            members = self.team_assignments.get(team, [])
+            if not members:
+                tk.Label(pf, text="No players assigned.", font=("Arial", 14), fg="#922B21", bg="#FDFEFE").pack(padx=24, pady=4)
+            else:
+                for i, member in enumerate(members, 1):
+                    tk.Label(pf, text=f"  {i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE", anchor="center", justify="center").pack(fill="x", padx=24, pady=4)
+            pf.pack(after=btn_widget, fill=None, padx=0, pady=(0, 18))
             pf.update_idletasks()
-            pf.config(width=btn_widget.winfo_width())
+            pf.config(width=350, height=40*max(1, len(members)))
+        # Attach the command after all frames and buttons are created
         for team in self.team_assignments:
-            # Team button (smaller height)
-            btn = tk.Button(teams_frame, text=team.upper(), font=("Arial", 16, "bold"), bg="#D6EAF8", fg="#154360", width=18, height=1,
-                            command=lambda t=team: show_players(t, btn))
-            btn.pack(pady=6)
-            # Player frame (hidden by default, same width as button, centered)
-            pf = tk.Frame(teams_frame, bg="#FDFEFE", relief="groove", bd=2, width=btn.winfo_reqwidth(), height=40)
-            pf.pack_propagate(False)  # Prevent frame from shrinking to fit contents
-            player_frames[team] = (pf, btn)
+            pf, btn = player_frames[team]
+            btn.config(command=lambda t=team, b=btn: show_players(t, b))
         # Buttons below
         btn_frame = tk.Frame(win, bg="#FDFEFE")
         btn_frame.pack(side="bottom", pady=20)
