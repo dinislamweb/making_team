@@ -287,31 +287,41 @@ class TeamMakerApp:
         teams_frame = tk.Frame(win, bg="#FDFEFE")
         teams_frame.pack(pady=10, fill="both", expand=True)
         player_frames = {}
+        team_states = {}
         for team in self.team_assignments:
             btn = tk.Button(teams_frame, text=team.upper(), font=("Arial", 16, "bold"), bg="#D6EAF8", fg="#154360", width=18, height=1)
             btn.pack(pady=6, anchor="center")
             pf = tk.Frame(teams_frame, bg="#FDFEFE", relief="groove", bd=2, width=350)
             pf.pack_propagate(False)
             player_frames[team] = (pf, btn)
-        def show_players(team, btn_widget):
-            for t, (pf, b) in player_frames.items():
-                pf.pack_forget()
+            team_states[team] = False  # collapsed by default
+        def toggle_players(team, btn_widget):
             pf, _ = player_frames[team]
-            for widget in pf.winfo_children():
-                widget.destroy()
-            members = self.team_assignments.get(team, [])
-            if not members:
-                tk.Label(pf, text="No players assigned.", font=("Arial", 14), fg="#922B21", bg="#FDFEFE").pack(padx=24, pady=4)
+            if team_states[team]:
+                pf.pack_forget()
+                team_states[team] = False
             else:
-                for i, member in enumerate(members, 1):
-                    tk.Label(pf, text=f"  {i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE", anchor="center", justify="center").pack(fill="x", padx=24, pady=4)
-            pf.pack(after=btn_widget, fill=None, padx=0, pady=(0, 18))
-            pf.update_idletasks()
-            pf.config(width=350, height=40*max(1, len(members)))
+                # Collapse all others
+                for t, (other_pf, _) in player_frames.items():
+                    other_pf.pack_forget()
+                    team_states[t] = False
+                # Populate and show this one
+                for widget in pf.winfo_children():
+                    widget.destroy()
+                members = self.team_assignments.get(team, [])
+                if not members:
+                    tk.Label(pf, text="No players assigned.", font=("Arial", 14), fg="#922B21", bg="#FDFEFE").pack(padx=24, pady=4)
+                else:
+                    for i, member in enumerate(members, 1):
+                        tk.Label(pf, text=f"  {i}. {member}", font=("Arial", 14), fg="#154360", bg="#FDFEFE", anchor="center", justify="center").pack(fill="x", padx=24, pady=4)
+                pf.pack(after=btn_widget, fill=None, padx=0, pady=(0, 18))
+                pf.update_idletasks()
+                pf.config(width=350, height=40*max(1, len(members)))
+                team_states[team] = True
         # Attach the command after all frames and buttons are created
         for team in self.team_assignments:
             pf, btn = player_frames[team]
-            btn.config(command=lambda t=team, b=btn: show_players(t, b))
+            btn.config(command=lambda t=team, b=btn: toggle_players(t, b))
         # Buttons below
         btn_frame = tk.Frame(win, bg="#FDFEFE")
         btn_frame.pack(side="bottom", pady=20)
